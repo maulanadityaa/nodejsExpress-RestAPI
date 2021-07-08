@@ -39,15 +39,22 @@ module.exports = {
             connection.query(`SELECT * FROM books WHERE id=?`, [id],
                 function (err, results) {
                     if (err) throw err;
-                    res.send({
-                        success: true,
-                        message: 'Get Book by ID',
-                        data: results,
-                    });
+                    else if (!results.length){
+                        res.status(404).send({
+                            success: false,
+                            message: 'Book Not Found',
+                        });
+                    } else {
+                        res.status(200).send({
+                            success: true,
+                            message: 'Get Book by ID',
+                            data: results,
+                        });
+                    }
                 }
             );
             connection.release();
-            console.log(dateTime+`  /api/book/${id}`);
+            console.log(dateTime+`  /api/book/id/${id}`);
         });
     },
     
@@ -59,15 +66,22 @@ module.exports = {
             connection.query(`SELECT * FROM books WHERE judul=?`, [judul],
                 function (err, results) {
                     if (err) throw err;
-                    res.send({
-                        success: true,
-                        message: 'Get Book by Judul',
-                        data: results,
-                    });
+                    else if (!results.length){
+                        res.status(404).send({
+                            success: false,
+                            message: 'Book Not Found',
+                        });
+                    } else {
+                        res.status(200).send({
+                            success: true,
+                            message: 'Get Book by Judul',
+                            data: results,
+                        });
+                    }
                 }
             );
             connection.release();
-            console.log(dateTime+`  /api/book/${judul}`);
+            console.log(dateTime+`  /api/book/judul/${judul}`);
         });
     },
     //add book
@@ -106,14 +120,26 @@ module.exports = {
         const id = req.body.id;
         pool.getConnection(function (err, connection) {
             if (err) throw err;
-            connection.query(`UPDATE books SET ?, updated_at=? WHERE id=?`, [data,dateTime,id],
+            connection.query(`SELECT * FROM books WHERE id=?`, [id],
                 function (err, results) {
                     if (err) throw err;
-                    res.send({
-                        success: true,
-                        message: 'Success Edit Book',
-                        data: data
-                    });
+                    else if (!results.length){
+                        res.status(404).send({
+                            success: false,
+                            message: 'Book Not Found',
+                        });
+                    } 
+                    else {
+                        connection.query(`UPDATE books SET ?, updated_at=? WHERE id=?`, [data,dateTime,id],
+                        function(err){
+                            if(err) throw err;
+                            res.status(200).send({
+                                success: true,
+                                message: 'Success Update Book',
+                                data: data,
+                            });
+                        });
+                    }
                 }
             );
             connection.release();
@@ -126,14 +152,25 @@ module.exports = {
         const id = req.body.id;
         pool.getConnection(function (err, connection) {
             if (err) throw err;
-            connection.query(`DELETE FROM books WHERE id=?`, [id],
+            connection.query(`SELECT * FROM books WHERE id=?`, [id],
                 function (err, results) {
                     if (err) throw err;
-                    res.send({
-                        success: true,
-                        message: 'Success Delete a Book',
-                        results: results
-                    });
+                    else if (!results.length){
+                        res.status(404).send({
+                            success: false,
+                            message: 'Book Not Found',
+                        });
+                    } 
+                    else {
+                        connection.query(`DELETE FROM books WHERE id=?`,[id],
+                        function(err){
+                            if(err) throw err;
+                            res.status(200).send({
+                                success: true,
+                                message: 'Success Delete Book',
+                            });
+                        });
+                    }
                 }
             );
             connection.release();
