@@ -10,7 +10,7 @@ app.use(express.json({limit:'20mb'}))
 
 // Default route
 app.get('/', function (req, res) {
-    res.send('<h1>API KungLao Library</h1>');
+    res.send('<h1>API Buku Perpustakaan</h1>');
 });
 
 //route url
